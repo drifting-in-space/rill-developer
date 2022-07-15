@@ -34,7 +34,7 @@ export class DataModelerSocketService extends DataModelerService {
 
   public async init(): Promise<void> {
     await super.init();
-    this.socket = io(this.serverConfig.socketUrl);
+    this.socket = io();
     (this.metricsService as MetricsSocketService).setSocket(this.socket);
 
     this.socket.on("patch", (entityType, stateType, patches) =>

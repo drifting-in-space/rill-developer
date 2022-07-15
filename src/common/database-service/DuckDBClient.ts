@@ -34,7 +34,7 @@ export class DuckDBClient {
     if (this.databaseConfig.skipDatabase || this.db) return;
     // we can later on swap this over to WASM and update data loader
     this.db = new duckdb.Database(this.databaseConfig.databaseName);
-    this.db.exec("PRAGMA threads=32;PRAGMA log_query_path='./log';");
+    this.db.exec("PRAGMA threads=60;PRAGMA log_query_path='./log';");
   }
 
   public execute<Row = Record<string, unknown>>(
