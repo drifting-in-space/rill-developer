@@ -38,6 +38,8 @@ export abstract class DataModelerCliCommand {
     cliRunArgs.shouldSkipDatabase ??= true;
     cliRunArgs.profileWithUpdate ??= false;
 
+    console.log(`[${(new Date()).toISOString()}] new RootConfig`)
+
     this.config = new RootConfig({
       database: new DatabaseConfig({
         databaseName: DATABASE_NAME,
@@ -52,14 +54,17 @@ export abstract class DataModelerCliCommand {
       profileWithUpdate: cliRunArgs.profileWithUpdate,
     });
 
+    console.log(`[${(new Date()).toISOString()}] await isPortOpen()`)
     const isServerRunning = await isPortOpen(this.config.server.socketPort);
 
     if (isServerRunning) {
+      console.log(`[${(new Date()).toISOString()}] await initClientInstances()`)
       await this.initClientInstances();
     } else {
       // database should be started when server is not running.
       // We can write to database in this case
       this.config.database.skipDatabase = false;
+      console.log(`[${(new Date()).toISOString()}] await initServerInstances()`)
       await this.initServerInstances();
     }
 

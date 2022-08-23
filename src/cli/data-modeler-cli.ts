@@ -18,6 +18,8 @@ try {
 }
 const packageJson = JSON.parse(readFileSync(PACKAGE_JSON).toString());
 
+console.log(`[${(new Date()).toISOString()}] CLI invoked`)
+
 const program = new Command();
 
 program

@@ -43,14 +43,18 @@ export class ProfileColumnActions extends DataModelerActions {
     }
     try {
       await Promise.all(
-        entity.profile.map((column) =>
-          this.collectColumnInfo(
+        entity.profile.map(async (column) => {
+          console.log(`[${(new Date()).toISOString()}] collectColumnInfo ${column.name} start`)
+          const result = await this.collectColumnInfo(
             entityType,
             entityId,
             (persistentEntity as PersistentModelEntity | PersistentTableEntity)
               .tableName,
             column
           )
+          console.log(`[${(new Date()).toISOString()}] collectColumnInfo ${column.name} end`)
+          return result
+        }
         )
       );
     } catch (err) {

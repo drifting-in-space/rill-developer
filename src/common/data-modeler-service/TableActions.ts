@@ -184,8 +184,8 @@ export class TableActions extends DataModelerActions {
                 row.name !== "root"
             );
           },
-          async () =>
-            (newDerivedTable.sizeInBytes =
+          async () => {
+            newDerivedTable.sizeInBytes =
               await this.databaseActionQueue.enqueue(
                 {
                   id: tableId,
@@ -193,9 +193,10 @@ export class TableActions extends DataModelerActions {
                 },
                 "getDestinationSize",
                 [persistentTable.path]
-              )),
-          async () =>
-            (newDerivedTable.cardinality =
+              )
+          },
+          async () => {
+            newDerivedTable.cardinality =
               await this.databaseActionQueue.enqueue(
                 {
                   id: tableId,
@@ -203,16 +204,18 @@ export class TableActions extends DataModelerActions {
                 },
                 "getCardinalityOfTable",
                 [persistentTable.tableName]
-              )),
-          async () =>
-            (newDerivedTable.preview = await this.databaseActionQueue.enqueue(
+              )
+          },
+          async () => {
+            newDerivedTable.preview = await this.databaseActionQueue.enqueue(
               {
                 id: tableId,
                 priority: DatabaseActionQueuePriority.TableProfile,
               },
               "getFirstNOfTable",
               [persistentTable.tableName, SOURCE_PREVIEW_COUNT]
-            )),
+            )
+          },
         ].map((asyncFunc) => asyncFunc())
       );
 
@@ -221,10 +224,12 @@ export class TableActions extends DataModelerActions {
         StateType.Derived,
         newDerivedTable,
       ]);
+      console.log(`[${(new Date()).toISOString()}] collectProfileColumns start`)
       await this.dataModelerService.dispatch("collectProfileColumns", [
         EntityType.Table,
         tableId,
       ]);
+      console.log(`[${(new Date()).toISOString()}] collectProfileColumns end`)
       this.dataModelerStateService.dispatch("markAsProfiled", [
         EntityType.Table,
         tableId,
