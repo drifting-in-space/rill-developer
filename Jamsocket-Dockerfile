@@ -1,16 +1,27 @@
-FROM rilldata/duckdb:0.3.2
+FROM rilldata/duckdb:0.4.0
 
 WORKDIR /app
-RUN mv node_modules /node_modules
-RUN rm package.json package-lock.json
-COPY . .
-RUN mv /node_modules ./
+# RUN mv node_modules /node_modules
+# RUN rm package.json package-lock.json
+# COPY . .
+# RUN mv /node_modules ./
+COPY package.json package-lock.json \
+     tsconfig.json tsconfig.node.json tsconfig.build.json \
+     svelte.config.js tailwind.config.cjs postcss.config.cjs .babelrc ./
+
+COPY build-tools build-tools/
+COPY src src/
+
 RUN npm i -d
 RUN rm -rf /root/.cache/ms-playwright
+
+COPY static static/
 RUN npm run build
 
 RUN build-tools/replace_package_type.sh module commonjs
 RUN echo '#!/bin/bash\nnode /app/dist/cli/data-modeler-cli.js "$@"' > /app/rill && chmod +x /app/rill
+
+COPY run.sh ./
 
 RUN /app/rill init --project citibike
 CMD ["/app/run.sh"]
